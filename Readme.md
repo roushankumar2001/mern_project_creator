@@ -36,12 +36,6 @@ npm install -g .
 mpc my-app
 ```
 
-Or with options (if CLI supports):
-
-```bash
-mpc my-app
-```
-
 ---
 
 ## 📁 Output Structure
