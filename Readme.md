@@ -48,9 +48,9 @@ mpc my-app --template react --with-tailwind
 
 ```
 my-app/
-├── client/
+├── my-app_client/
 │   └── Vite + React + Tailwind setup
-├── server/
+├── my-app_server/
 │   └── Express.js setup
 ```
 

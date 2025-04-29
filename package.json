@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-  "mpc": "./index.js"
-},
+    "mpc": "./index.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
