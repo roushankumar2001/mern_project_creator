@@ -39,7 +39,7 @@ mpc my-app
 Or with options (if CLI supports):
 
 ```bash
-mpc my-app --template react --with-tailwind
+mpc my-app
 ```
 
 ---
