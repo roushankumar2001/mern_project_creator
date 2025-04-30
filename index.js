@@ -21,41 +21,86 @@ process.chdir(projectPath);
 
 // --- Set up server ---
 console.log('\x1b[34m📦 Setting up Express server...\x1b[0m');
-fs.mkdirSync(projectName + '_server');  //create server dir
+fs.mkdirSync(projectName + "_server/public/client/", { recursive: true });
 // Initialize server package.json & install deps
-execSync('npm init -y', { cwd: projectName+'_server', stdio: 'inherit' });
-execSync('npm install express', { cwd: projectName+'_server', stdio: 'inherit' });
+execSync('npm init -y', { cwd: projectName + '_server', stdio: 'inherit' });
+execSync('npm install express', { cwd: projectName + '_server', stdio: 'inherit' });
 
 fs.writeFileSync(
-  projectName+'_server/index.js',
+  projectName + '_server/index.js',
   `
 const express = require('express');
 const path = require('path');
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 
-app.use(express.static(path.join(__dirname, '../${projectName}_client/dist')));
-
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../${projectName}_client/dist/index.html'));
-});
-
+app.use(express.static(path.join(__dirname, 'public/client/dist')));
+app.get('/api/test', (req, res) => { res.send('test success');})
 app.listen(PORT, () => {
   console.log('🚀 Server running on port', PORT);
 });
 `
 );
 console.log('\n \x1b[34mcreating server Readme\x1b[0m');
-fs.writeFileSync(projectName+'_server/Readme.md', `
+fs.writeFileSync(projectName + '_server/Readme.md', `
 ${projectName}_server readme
   `);
 
 // --- Set up client (Vite + React) ---
 console.log('\n\x1b[34m⚛️ Setting up React + Vite frontend...\x1b[0m');
 execSync(`npm create vite@latest ${projectName}_client -- --template react`, { stdio: 'inherit' });
+fs.writeFileSync(projectName + '_client/vite.config.js', `import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [tailwindcss(),react()],
+  build: {
+    outDir: '../${projectName}_server/public/client/', // ← change this to your desired output folder
+  },
+   server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000/api/',  // Your backend server
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\\/api/, ''),
+      },
+    },
+  }
+})
+`
+)
+
+///modifying css for tailwind
+const filePath = `${projectName}_client/src/index.css`
+const existingContent = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf-8') : '';
+const lineToAdd = '@import "tailwindcss";\n';
+// Step 2: Combine new line with old content
+const newContent = lineToAdd + existingContent;
+
+// Step 3: Write it back
+fs.writeFileSync(filePath, newContent, 'utf-8');
+
+
 //setup react  frontend now install dependecies
 console.log('\n\x1b[34m📦 Installing frontend dependencies...\x1b[0m');
-execSync('npm install', { cwd: projectName+'_client', stdio: 'inherit' });
+execSync('npm install', { cwd: projectName + '_client', stdio: 'inherit' });
+execSync('npm install tailwindcss @tailwindcss/vite', { cwd: projectName + '_client', stdio: 'inherit' });
+
+//modifying build command
+
+const packagepath = projectName + '_client/package.json'; // path to your JSON file
+
+// Step 1: Read the JSON file
+const fileContent = fs.readFileSync(packagepath, 'utf-8');
+const jsonData = JSON.parse(fileContent);
+
+// Step 2: Modify the data
+jsonData.scripts.build = "vite build --emptyOutDir"; // change the value of the desired key
+
+// Step 3: Write the modified JSON back to the file
+fs.writeFileSync(packagepath, JSON.stringify(jsonData, null, 2), 'utf-8');
+
 
 console.log('\n \x1b[34mcreating project Readme\x1b[0m');
 fs.writeFileSync('Readme.md', `
