@@ -54,6 +54,7 @@ my-app/
 inside project directory
 
 To start dev server for client:
+
  go to client folder
 ```bash
 npm run dev
@@ -61,6 +62,7 @@ npm run dev
 
 
 To build for client production:
+
  go to client folder
 ```bash
 npm run build
