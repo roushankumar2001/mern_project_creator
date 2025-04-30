@@ -69,6 +69,7 @@ npm run build
 ```
 
 To start backend server  :
+
  go to backend folder
 ```bash
 node index.js
