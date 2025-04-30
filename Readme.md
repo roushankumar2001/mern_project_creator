@@ -51,18 +51,27 @@ my-app/
 ---
 
 ## 💻 Development
+inside project directory
 
-To run the dev server:
-
+To start dev server for client:
+ go to client folder
 ```bash
 npm run dev
 ```
 
-To build for production:
 
+To build for client production:
+ go to client folder
 ```bash
 npm run build
 ```
+
+To start backend server  :
+ go to backend folder
+```bash
+node index.js
+```
+
 
 ---
 
