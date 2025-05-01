@@ -72,7 +72,7 @@ To start backend server  :
 
  go to backend folder
 ```bash
-node index.js
+npm start
 ```
 
 
@@ -84,6 +84,7 @@ node index.js
 - [React](https://reactjs.org/)
 - [TailwindCSS](https://tailwindcss.com/)
 - [Express](https://expressjs.com/)
+- [mongodb](https://www.mongodb.com/)
 
 
 

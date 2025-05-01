@@ -22,29 +22,88 @@ process.chdir(projectPath);
 // --- Set up server ---
 console.log('\x1b[34m📦 Setting up Express server...\x1b[0m');
 fs.mkdirSync(projectName + "_server/public/client/", { recursive: true });
+//create .env
+fs.writeFileSync(projectName+'_server/.env',`# This is the database connection string for atlas
+MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net/mydb
+  
+# Server port
+PORT=5000
+`);
 // Initialize server package.json & install deps
-execSync('npm init -y', { cwd: projectName + '_server', stdio: 'inherit' });
-execSync('npm install express', { cwd: projectName + '_server', stdio: 'inherit' });
+fs.writeFileSync(projectName+'_server/package.json',`{
+  "name": "${projectName}_server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \\"Error: no test specified\\" && exit 1",
+    "start":"node --env-file=.env --watch index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module"
+}
+`)
+execSync('npm install express mongoose', { cwd: projectName + '_server', stdio: 'inherit' });
+fs.mkdirSync(projectName + "_server/models/", { recursive: true });
+fs.writeFileSync(projectName+'_server/models/user.js',`import mongoose from 'mongoose';
+
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+});
+
+export default mongoose.model('User', userSchema);
+`)
 
 fs.writeFileSync(
   projectName + '_server/index.js',
-  `
-const express = require('express');
-const path = require('path');
+  `import express from 'express';
+import mongoose from 'mongoose';
+import User from './models/User.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 const app = express();
 const PORT = 5000;
 
+//Middleware
+app.use(express.json());
+
+// Connect to MongoDB Atlas
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('✅ Connected to MongoDB Atlas'))
+.catch(err => console.error('❌ MongoDB connection error:', err));
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 app.use(express.static(path.join(__dirname, 'public/client/dist')));
 app.get('/api/test', (req, res) => { res.send('test success');})
+app.get('/api/users', async (req, res) => {
+  const users = await User.find();
+  res.json(users);
+});
+
+app.post('/api/users', async (req, res) => {
+  const newUser = await User.create(req.body);
+  res.json(newUser);
+});
 app.listen(PORT, () => {
   console.log('🚀 Server running on port', PORT);
 });
 `
 );
+
 console.log('\n \x1b[34mcreating server Readme\x1b[0m');
 fs.writeFileSync(projectName + '_server/Readme.md', `
 ${projectName}_server readme
   `);
+
+
 
 // --- Set up client (Vite + React) ---
 console.log('\n\x1b[34m⚛️ Setting up React + Vite frontend...\x1b[0m');
