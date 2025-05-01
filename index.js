@@ -171,6 +171,6 @@ console.log('\x1b[42m\x1b[97m%s\x1b[0m', ` ${projectName} created successfully!\
 console.log('\x1b[44m\x1b[93m%s\x1b[0m', `Next steps:\n`);
 console.log(`\n\x1b[90m # move to  directory \n    \x1b[36m cd ${projectName}\x1b[0m`);
 console.log(`\x1b[90m  # Start backend\x1b[0m`);
-console.log(`\x1b[36m     cd ${projectName}_server && node index.js\x1b[0m`);
+console.log(`\x1b[36m     cd ${projectName}_server && node  start\x1b[0m`);
 console.log(`\x1b[90m  # In another terminal, start frontend\x1b[0m`);
 console.log(`\x1b[36m     cd ${projectName}_client && npm run dev\x1b[0m`);
